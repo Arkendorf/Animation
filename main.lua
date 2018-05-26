@@ -9,8 +9,11 @@ function love.load()
   pool_frame = 1
 
   back_img = love.graphics.newImage("neddy_blur.png")
+  back_quad = spritesheet(back_img, 64, 160)
   dive_img = love.graphics.newImage("diving.png")
+  dive_quad = spritesheet(dive_img, 24, 42)
   leave_img = love.graphics.newImage("leaving.png")
+  leave_quad = spritesheet(leave_img, 16, 16)
 
   splash_img = love.graphics.newImage("splash.png")
   splash_quad = spritesheet(splash_img, 32, 32)
@@ -21,7 +24,7 @@ function love.load()
   ripple_frame = 1
 
   neddy_pos = 0
-  dive_pos = -38
+  dive_pos = -42
   leave_pos = 20
 
   splash = false
@@ -30,6 +33,8 @@ function love.load()
   step = 1
 
   total_dt = 0
+
+  palette = 4
 end
 
 function love.update(dt)
@@ -74,7 +79,7 @@ function love.update(dt)
 
   if splash == true then -- animate splash
     splash_frame = splash_frame + dt * 12
-    if splash_frame > 12 then
+    if splash_frame > 13 then
       splash = false
       splash_frame = 1
     end
@@ -92,24 +97,25 @@ function love.draw()
   love.graphics.setCanvas(canvas)
   love.graphics.clear()
 
-  love.graphics.draw(pool_img, pool_quad[math.floor(pool_frame)])
-  love.graphics.draw(back_img, 0, neddy_pos)
+  love.graphics.draw(pool_img, pool_quad[math.floor(pool_frame)+(palette-1)*4])
+
+  love.graphics.draw(back_img, back_quad[palette], 0, neddy_pos)
 
   shader.cutoff:send("cutoff", 20)
   love.graphics.setShader(shader.cutoff)
-  love.graphics.draw(leave_img, 24, leave_pos)
+  love.graphics.draw(leave_img, leave_quad[palette], 24, leave_pos)
 
   shader.cutoff:send("cutoff", 32)
   love.graphics.setShader(shader.cutoff)
-  love.graphics.draw(dive_img, 20, dive_pos)
+  love.graphics.draw(dive_img, dive_quad[palette], 20, dive_pos)
   love.graphics.setShader()
 
   if step >= 4 and leave_pos < 12 then
-    love.graphics.draw(ripple_img, ripple_quad[math.floor(ripple_frame)], 20, 4)
+    love.graphics.draw(ripple_img, ripple_quad[math.floor(ripple_frame)+(palette-1)*6], 20, 4)
   end
 
   if splash then
-    love.graphics.draw(splash_img, splash_quad[math.floor(splash_frame)], 16, 8)
+    love.graphics.draw(splash_img, splash_quad[math.floor(splash_frame)+(palette-1)*12], 16, 8)
   end
 
   love.graphics.setCanvas()
